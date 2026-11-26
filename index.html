@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>KOVA — Modern Essentials Store</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --snap-u1: #f23c57;
+      --snap-u2: #0fadff;
+      --snap-pill: #f1f3f5;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ================= DECOY SHOP ================= */
+    .shop-view { min-height: 100vh; background: var(--bg); padding-bottom: 40px; }
+
+    .shop-header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 12px;
+    }
+
+    .shop-header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .shop-brand { font-size: 22px; font-weight: 900; letter-spacing: 1.5px; color: #111; }
+    .shop-brand span { color: #2563eb; }
+
+    .cart-btn {
+      position: relative; border: none; background: #f3f4f6;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: grid; place-items: center; cursor: pointer; color: #111;
+    }
+
+    .cart-badge {
+      position: absolute; top: -3px; right: -3px;
+      background: #111; color: #fff; font-size: 11px; font-weight: 700;
+      min-width: 18px; height: 18px; border-radius: 99px;
+      display: grid; place-items: center; padding: 0 4px;
+    }
+
+    .shop-search-wrap { position: relative; margin-bottom: 12px; }
+    .shop-search-wrap .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; pointer-events: none;
+    }
+
+    #shopSearch {
+      width: 100%; padding: 11px 16px 11px 42px;
+      border-radius: 12px; border: 1px solid var(--border);
+      background: #f3f4f6; font-size: 15px; outline: none;
+    }
+    #shopSearch:focus { background: #fff; border-color: #111; }
+
+    .category-pills { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    .category-pills::-webkit-scrollbar { display: none; }
+
+    .pill {
+      border: 1px solid var(--border); background: #fff; color: #374151;
+      padding: 7px 14px; border-radius: 99px; font-size: 13px;
+      font-weight: 600; white-space: nowrap; cursor: pointer;
+    }
+    .pill.active { background: #111; color: #fff; border-color: #111; }
+
+    .shop-main { max-width: 960px; margin: 0 auto; padding: 16px; }
+
+    .promo-banner {
+      background: linear-gradient(135deg, #111827 0%, #1f2937 60%, #374151 100%);
+      color: #fff; border-radius: 18px; padding: 24px 20px; margin-bottom: 20px;
+    }
+    .promo-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      background: rgba(255, 255, 255, 0.16); padding: 4px 10px; border-radius: 99px; margin-bottom: 10px;
+    }
+    .promo-banner h1 { font-size: 22px; line-height: 1.3; margin-bottom: 6px; }
+    .promo-banner p { font-size: 13px; color: #d1d5db; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (min-width: 680px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .product-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border); display: flex; flex-direction: column;
+    }
+    .product-thumb {
+      height: 150px; display: grid; place-items: center; font-size: 46px; position: relative;
+    }
+    .product-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(17, 24, 39, 0.85); color: #fff;
+      font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    }
+    .product-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .product-cat { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .product-title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+    .product-footer { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .product-price { font-size: 15px; font-weight: 800; }
+    .add-bag-btn {
+      border: none; background: #111; color: #fff;
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+
+    .shop-toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #111; color: #fff; padding: 10px 18px; border-radius: 99px;
+      font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.25s ease;
+      pointer-events: none; z-index: 40;
+    }
+    .shop-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ================= SNAPCHAT-STYLE HIDDEN CHAT ================= */
+    .chat-view {
+      position: fixed; inset: 0; z-index: 100;
+      background: #fff; display: flex; flex-direction: column; height: 100dvh;
+    }
+
+    .chat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-bottom: 1px solid #efefef;
+      background: #fff; flex-shrink: 0;
+    }
+
+    .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; min-width: 0; }
+    .snap-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #fffc00; color: #111; font-weight: 900; font-size: 16px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .partner-name { font-size: 15px; font-weight: 800; color: #111; }
+    .partner-status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+
+    .presence-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .presence-dot.online { background: var(--success); box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25); }
+    .presence-dot.offline { background: #cbd5e1; }
+
+    .chat-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .action-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      display: grid; place-items: center; cursor: pointer;
+      transition: transform 0.12s;
+    }
+    .action-btn:active { transform: scale(0.92); }
+    .cfg-btn { background: #f3f4f6; color: #4b5563; }
+    .alert-btn { background: #e0f2fe; color: #0284c7; }
+    .wipe-btn { background: #fee2e2; color: #dc2626; }
+    .exit-btn { background: #111827; color: #ffffff; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 14px 12px 18px;
+      display: flex; flex-direction: column; gap: 10px; background: #fff;
+    }
+
+    .empty-chat { margin: auto; text-align: center; color: #9ca3af; font-size: 14px; padding: 20px; }
+
+    .msg-block { display: flex; flex-direction: column; gap: 3px; animation: fadeSlide 0.15s ease-out; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-sender-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.4px; padding-left: 2px;
+    }
+    .msg-block.u1 .msg-sender-label { color: var(--snap-u1); }
+    .msg-block.u2 .msg-sender-label { color: var(--snap-u2); }
+
+    .msg-content-row { display: flex; align-items: stretch; gap: 10px; }
+    .snap-bar { width: 3.5px; border-radius: 99px; flex-shrink: 0; }
+    .msg-block.u1 .snap-bar { background: var(--snap-u1); }
+    .msg-block.u2 .snap-bar { background: var(--snap-u2); }
+
+    .msg-inner { flex: 1; min-width: 0; padding: 3px 6px 3px 2px; border-radius: 8px; }
+    .msg-inner:active { background: #f8fafc; }
+
+    .msg-reply-quote {
+      background: #f3f4f6; border-left: 3px solid #9ca3af;
+      border-radius: 6px; padding: 5px 8px; margin-bottom: 6px;
+      font-size: 12px; color: #4b5563;
+    }
+    .msg-reply-quote strong { display: block; font-size: 11px; margin-bottom: 2px; }
+
+    .msg-text {
+      font-size: 15.5px; line-height: 1.45; color: #111;
+      word-wrap: break-word; white-space: pre-wrap;
+    }
+
+    .msg-media-img {
+      max-width: min(270px, 78vw); max-height: 340px;
+      border-radius: 12px; object-fit: cover; display: block;
+      cursor: pointer; margin-top: 4px; background: #f3f4f6;
+    }
+
+    .msg-media-video {
+      width: min(290px, 80vw); max-height: 360px;
+      border-radius: 12px; background: #000; display: block; margin-top: 4px;
+    }
+
+    .video-load-card {
+      background: #111827; color: #fff; border-radius: 12px;
+      padding: 14px; max-width: 260px; margin-top: 4px;
+      display: flex; align-items: center; gap: 10px; cursor: pointer;
+    }
+    .video-play-circle {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255,255,255,0.18); display: grid; place-items: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .video-load-meta { font-size: 13px; font-weight: 700; }
+    .video-load-meta small { display: block; font-size: 11px; color: #9ca3af; font-weight: 500; }
+
+    .msg-voice-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: #f3f4f6; padding: 6px 10px; border-radius: 14px;
+      max-width: 280px; margin-top: 4px;
+    }
+    .msg-voice-wrap audio { width: 100%; height: 34px; }
+
+    .upload-progress-box {
+      background: #f3f4f6; border-radius: 10px; padding: 10px; max-width: 260px; margin-top: 4px;
+    }
+    .upload-progress-label {
+      font-size: 12px; font-weight: 600; color: #374151;
+      margin-bottom: 6px; display: flex; justify-content: space-between;
+    }
+    .upload-track { height: 6px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+    .upload-fill { height: 100%; background: var(--snap-u2); width: 0%; transition: width 0.15s linear; }
+
+    .msg-meta {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 8px; margin-top: 4px; font-size: 11px; color: #9ca3af;
+    }
+    .msg-edited { font-style: italic; }
+
+    .msg-status { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
+    .status-icon { display: inline-block; width: 9px; height: 9px; border-radius: 2px; }
+    .status-sending .status-icon { border: 1.5px solid #9ca3af; border-radius: 50%; }
+    .status-sent { color: var(--snap-u2); }
+    .status-sent .status-icon { background: var(--snap-u2); }
+    .status-seen { color: #64748b; }
+    .status-seen .status-icon { border: 2px solid var(--snap-u2); background: transparent; }
+    .status-failed {
+      color: var(--danger); cursor: pointer; background: #fef2f2;
+      padding: 2px 7px; border-radius: 6px;
+    }
+
+    .msg-reactions { display: flex; gap: 4px; margin-top: 4px; }
+    .reaction-chip {
+      background: #f3f4f6; border: 1px solid #e5e7eb;
+      border-radius: 99px; padding: 2px 7px; font-size: 13px;
+    }
+
+    /* Live Typing Preview */
+    .live-typing-box {
+      margin: 0 12px 8px; padding: 8px 12px;
+      background: #f8fafc; border-left: 3px solid var(--snap-u2);
+      border-radius: 8px; flex-shrink: 0;
+    }
+    .live-typing-header {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 3px;
+    }
+    .typing-pulse {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--snap-u2); animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .live-typing-text {
+      font-size: 14px; color: #334155; max-height: 72px;
+      overflow-y: auto; word-wrap: break-word;
+    }
+
+    /* Context & Recording Bars */
+    .context-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 14px; background: #f8fafc;
+      border-top: 1px solid #e5e7eb; flex-shrink: 0;
+    }
+    .context-title { font-size: 12px; font-weight: 800; color: var(--snap-u2); }
+    .context-preview {
+      font-size: 13px; color: #4b5563; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; max-width: 78vw;
+    }
+    .context-close { border: none; background: none; font-size: 16px; color: #6b7280; padding: 4px 8px; cursor: pointer; }
+
+    .recording-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #fef2f2;
+      border-top: 1px solid #fecaca; flex-shrink: 0;
+    }
+    .rec-indicator { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #dc2626; }
+    .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: #dc2626; animation: pulse 0.9s infinite; }
+    .rec-cancel { border: none; background: #fff; color: #374151; padding: 7px 12px; border-radius: 99px; font-weight: 600; cursor: pointer; }
+    .rec-send { border: none; background: #dc2626; color: #fff; padding: 7px 14px; border-radius: 99px; font-weight: 700; cursor: pointer; }
+
+    /* Bottom Dock */
+    .chat-input-dock {
+      display: flex; align-items: flex-end; gap: 8px;
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      border-top: 1px solid #efefef; background: #fff; flex-shrink: 0;
+    }
+    .dock-icon-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: var(--snap-pill); color: #374151;
+      display: grid; place-items: center; flex-shrink: 0; cursor: pointer;
+    }
+    .input-pill {
+      flex: 1; background: var(--snap-pill); border-radius: 22px;
+      padding: 9px 14px; display: flex; align-items: center;
+    }
+    #msgInput {
+      width: 100%; border: none; background: transparent; outline: none;
+      resize: none; font-family: inherit; font-size: 15.5px;
+      line-height: 1.35; max-height: 110px; color: #111;
+    }
+    .send-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: var(--snap-u2); color: #fff;
+      display: grid; place-items: center; flex-shrink: 0;
+      cursor: pointer; touch-action: manipulation;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.48);
+      backdrop-filter: blur(4px); z-index: 200;
+      display: grid; place-items: center; padding: 18px;
+    }
+    .modal-card {
+      background: #fff; width: 100%; max-width: 360px;
+      border-radius: 20px; padding: 20px; text-align: center; direction: rtl;
+    }
+    .modal-card h3 { font-size: 17px; margin-bottom: 6px; }
+    .modal-card p { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+    .identity-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .id-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 13px; border-radius: 12px; border: 1.5px solid var(--border);
+      background: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .id-btn .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .id-btn .dot.red { background: var(--snap-u1); }
+    .id-btn .dot.blue { background: var(--snap-u2); }
+
+    .field-group { text-align: right; margin-bottom: 12px; }
+    .field-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: #374151; }
+    .field-group input {
+      width: 100%; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid var(--border); font-size: 13.5px; direction: ltr; outline: none;
+    }
+    .field-group input:focus { border-color: var(--snap-u2); }
+
+    .modal-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .btn-primary, .btn-secondary, .btn-danger {
+      flex: 1; border: none; padding: 11px; border-radius: 12px;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .btn-primary { background: var(--snap-u2); color: #fff; }
+    .btn-secondary { background: #f3f4f6; color: #374151; }
+    .btn-danger { background: #dc2626; color: #fff; }
+
+    .action-backdrop { align-items: end; padding: 14px; }
+    .action-sheet { width: 100%; max-width: 420px; background: #fff; border-radius: 20px; padding: 14px; }
+    .emoji-row {
+      display: flex; justify-content: space-around;
+      padding-bottom: 12px; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9;
+    }
+    .emoji-opt {
+      border: none; background: #f8fafc; width: 42px; height: 42px;
+      border-radius: 50%; font-size: 22px; cursor: pointer;
+    }
+    .sheet-buttons { display: flex; flex-direction: column; gap: 6px; }
+    .sheet-btn {
+      border: none; background: #f8fafc; padding: 12px; border-radius: 12px;
+      font-size: 14.5px; font-weight: 700; text-align: right; cursor: pointer;
+    }
+    .sheet-btn.danger { color: #dc2626; background: #fef2f2; }
+
+    .lightbox {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+      z-index: 300; display: grid; place-items: center; padding: 16px;
+    }
+    .lightbox img { max-width: 100%; max-height: 92vh; border-radius: 10px; }
+
+    .chat-toast {
+      position: fixed; top: 68px; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(17, 24, 39, 0.92); color: #fff;
+      padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 250;
+    }
+    .chat-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- ================= DECOY E-COMMERCE STOREFRONT ================= -->
+  <div id="shopView" class="shop-view">
+    <header class="shop-header">
+      <div class="shop-header-top">
+        <div class="shop-brand">KOVA<span>.</span></div>
+        <button id="cartBtn" class="cart-btn" aria-label="Cart">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span id="cartCount" class="cart-badge">0</span>
+        </button>
+      </div>
+
+      <form id="searchForm" class="shop-search-wrap" autocomplete="off">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="shopSearch" type="search" placeholder="Search sneakers, watches, audio..." autocomplete="off" autocorrect="off" spellcheck="false" />
+      </form>
+
+      <div class="category-pills" id="categoryPills">
+        <button class="pill active" data-cat="all">All</button>
+        <button class="pill" data-cat="tech">Tech</button>
+        <button class="pill" data-cat="watches">Watches</button>
+        <button class="pill" data-cat="footwear">Footwear</button>
+        <button class="pill" data-cat="accessories">Accessories</button>
+      </div>
+    </header>
+
+    <main class="shop-main">
+      <section class="promo-banner">
+        <div class="promo-tag">NEW SEASON DROP</div>
+        <h1>Minimalist gear built for everyday motion.</h1>
+        <p>Free express shipping on orders over $90.</p>
+      </section>
+      <section id="productGrid" class="product-grid"></section>
+    </main>
+
+    <div id="shopToast" class="shop-toast">Added to bag</div>
+  </div>
+
+  <!-- ================= HIDDEN SNAPCHAT-STYLE CHAT ================= -->
+  <div id="chatView" class="chat-view hidden">
+    <header class="chat-header">
+      <div class="chat-user-info" id="switchUserTrigger" title="گۆڕینی کەس">
+        <div id="partnerAvatar" class="snap-avatar">P</div>
+        <div>
+          <div id="partnerName" class="partner-name">چاتی تایبەت</div>
+          <div class="partner-status">
+            <span id="presenceDot" class="presence-dot offline"></span>
+            <span id="presenceText">پەیوەندی نییە</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-actions">
+        <button id="openSettingsBtn" class="action-btn cfg-btn" title="ڕێکخستنەکان">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <button id="telegramAlertBtn" class="action-btn alert-btn" title="ئاگادارکردنەوە لە تێلیگرام">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+
+        <button id="wipeChatBtn" class="action-btn wipe-btn" title="سڕینەوەی هەموو چاتەکان">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+
+        <button id="backToShopBtn" class="action-btn exit-btn" title="گەڕانەوە بۆ شۆپ">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="chatMessages" class="chat-messages"></main>
+
+    <!-- Live Typing Preview -->
+    <div id="liveTypingBox" class="live-typing-box hidden">
+      <div class="live-typing-header">
+        <span class="typing-pulse"></span>
+        <span>ئەنووسێت...</span>
+      </div>
+      <div id="liveTypingText" class="live-typing-text" dir="auto"></div>
+    </div>
+
+    <!-- Reply / Edit Context Bar -->
+    <div id="contextBar" class="context-bar hidden">
+      <div>
+        <div id="contextTitle" class="context-title"></div>
+        <div id="contextPreview" class="context-preview" dir="auto"></div>
+      </div>
+      <button id="cancelContextBtn" class="context-close">✕</button>
+    </div>
+
+    <!-- Voice Recording Bar -->
+    <div id="recordingBar" class="recording-bar hidden">
+      <button id="cancelVoiceBtn" class="rec-cancel">لابردن</button>
+      <div class="rec-indicator">
+        <span class="rec-dot"></span>
+        <span id="recTimer">00:00</span>
+      </div>
+      <button id="sendVoiceBtn" class="rec-send">ناردنی ڤۆیس</button>
+    </div>
+
+    <!-- Bottom Input Dock -->
+    <footer class="chat-input-dock">
+      <input id="mediaFileInput" type="file" accept="image/*,video/*" hidden />
+
+      <button id="attachMediaBtn" class="dock-icon-btn" title="ڕەسم یان ڤیدیۆ">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+      </button>
+
+      <div class="input-pill">
+        <textarea id="msgInput" rows="1" placeholder="نامەیەک بنووسە..." dir="auto" autocomplete="off"></textarea>
+      </div>
+
+      <button id="voiceBtn" class="dock-icon-btn" title="ڤۆیس">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </button>
+
+      <button id="sendBtn" class="send-btn" title="ناردن">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+        </svg>
+      </button>
+    </footer>
+
+    <!-- Identity Modal -->
+    <div id="identityModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h3>کێیت؟</h3>
+        <p>ئاکاونتەکەت هەڵبژێرە بۆ چوونەژوورەوە</p>
+        <div class="identity-buttons">
+          <button class="id-btn" data-user="u1"><span class="dot red"></span>کەسی یەکەم (سوور)</button>
+          <button class="id-btn" data-user="u2"><span class="dot blue"></span>کەسی دووەم (شین)</button>
+        </div>
+        <button id="cancelIdentityBtn" class="btn-secondary" style="width:100%;">گەڕانەوە بۆ شۆپ</button>
+      </div>
+    </div>
+
+    <!-- Settings Modal (Stored Safely on Your Phone Only) -->
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h3>ڕێکخستنی پەیوەندی و تێلیگرام</h3>
+        <p>ئەم زانیارییانە تەنها لەسەر مۆبایلی خۆت خەزن دەبن و لە گێتهاب دەرناکەون.</p>
+        <div class="field-group">
+          <label>لینکی Firebase Realtime Database:</label>
+          <input id="cfgDbUrl" type="url" placeholder="https://your-app-default-rtdb.firebaseio.com" />
+        </div>
+        <div class="field-group">
+          <label>تۆکنی بۆتی تێلیگرام (Telegram Bot Token):</label>
+          <input id="cfgTgToken" type="text" placeholder="123456:ABC-DEF..." />
+        </div>
+        <div class="field-group">
+          <label>ژمارەی چاتی تێلیگرام (Chat ID):</label>
+          <input id="cfgTgChatId" type="text" placeholder="123456789" />
+        </div>
+        <div class="field-group">
+          <label>دەقی نامەی ئاگادارکردنەوە:</label>
+          <input id="cfgTgMsg" type="text" style="direction:rtl;" placeholder="شۆپەکە حازرە 🛍️" />
+        </div>
+        <div class="modal-actions">
+          <button id="closeSettingsBtn" class="btn-secondary">داخستن</button>
+          <button id="saveSettingsBtn" class="btn-primary">خەزنکردن</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Action Sheet -->
+    <div id="msgActionBackdrop" class="modal-backdrop action-backdrop hidden">
+      <div class="action-sheet">
+        <div class="emoji-row">
+          <button class="emoji-opt" data-emoji="❤️">❤️</button>
+          <button class="emoji-opt" data-emoji="😂">😂</button>
+          <button class="emoji-opt" data-emoji="😮">😮</button>
+          <button class="emoji-opt" data-emoji="😢">😢</button>
+          <button class="emoji-opt" data-emoji="🔥">🔥</button>
+          <button class="emoji-opt" data-emoji="👍">👍</button>
+        </div>
+        <div class="sheet-buttons">
+          <button id="actReply" class="sheet-btn">↩️ وەڵامدانەوە (Reply)</button>
+          <button id="actEdit" class="sheet-btn">✏️ دەستکاریکردن (Edit)</button>
+          <button id="actDelete" class="sheet-btn danger">🗑️ سڕینەوە (Delete)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wipe Confirm Modal -->
+    <div id="wipeModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h3>سڕینەوەی هەموو چاتەکان؟</h3>
+        <p>هەموو نامە و ڕەسم و ڤیدیۆ و ڤۆیسەکان بە یەکجاری بۆ هەردوولا دەسڕێنەوە.</p>
+        <div class="modal-actions">
+          <button id="cancelWipeBtn" class="btn-secondary">پاشگەزبوونەوە</button>
+          <button id="confirmWipeBtn" class="btn-danger">بەڵێ، هەمووی بسڕەوە</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="lightbox hidden">
+      <img id="lightboxImg" alt="Preview" />
+    </div>
+
+    <div id="chatToast" class="chat-toast"></div>
+  </div>
+
+  <!-- Firebase Realtime Database SDK (Official CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+  <script>
+    (() => {
+      // ============================================================
+      // ڕێکخستنی خێرا: دەتوانیت لینکی فایەربەیسەکەت لێرە دابنێیت، یان
+      // بە بەتاڵی بیهێڵیتەوە و لە ناو دوگمەی ڕێکخستن (⚙️) دایبنێیت
+      // ============================================================
+      const DEFAULT_CONFIG = {
+        databaseURL: "", // نموونە: "https://my-shop-default-rtdb.firebaseio.com"
+        telegramBotToken: "", // باشترە لە ڕێکخستن (⚙️) دایبنێیت نەک لە گێتهابی گشتی
+        telegramChatId: "",
+        alertMessage: "شۆپەکە حازرە 🛍️"
+      };
+
+      const SECRET_CODE = "18771877";
+      const CHUNK_SIZE = 750 * 1024; // 750KB raw slice per chunk
+
+      function loadConfig() {
+        try {
+          const saved = JSON.parse(localStorage.getItem("kova_cfg_v1") || "{}");
+          return {
+            databaseURL: (saved.databaseURL || DEFAULT_CONFIG.databaseURL || "").trim().replace(/\/+$/, ""),
+            telegramBotToken: (saved.telegramBotToken || DEFAULT_CONFIG.telegramBotToken || "").trim(),
+            telegramChatId: (saved.telegramChatId || DEFAULT_CONFIG.telegramChatId || "").trim(),
+            alertMessage: (saved.alertMessage || DEFAULT_CONFIG.alertMessage || "شۆپەکە حازرە 🛍️").trim()
+          };
+        } catch {
+          return { ...DEFAULT_CONFIG };
+        }
+      }
+
+      let CFG = loadConfig();
+
+      // ================= 1. DECOY E-COMMERCE =================
+      const PRODUCTS = [
+        { id: 1, title: "KOVA Aero Runner", cat: "footwear", price: 128, icon: "👟", bg: "#e0e7ff", badge: "BESTSELLER" },
+        { id: 2, title: "Chrono Matte Watch", cat: "watches", price: 195, icon: "⌚", bg: "#fef3c7", badge: "LIMITED" },
+        { id: 3, title: "Studio ANC Headphones", cat: "tech", price: 249, icon: "🎧", bg: "#dcfce7", badge: "NEW" },
+        { id: 4, title: "Minimal Leather Tote", cat: "accessories", price: 110, icon: "👜", bg: "#fce7f3", badge: "" },
+        { id: 5, title: "Titanium Smart Band", cat: "tech", price: 89, icon: "📱", bg: "#e0f2fe", badge: "" },
+        { id: 6, title: "Obsidian Sunglasses", cat: "accessories", price: 75, icon: "🕶️", bg: "#f3f4f6", badge: "SALE" },
+        { id: 7, title: "Stealth Low Sneakers", cat: "footwear", price: 142, icon: "👞", bg: "#ede9fe", badge: "" },
+        { id: 8, title: "Nordic Automatic 40mm", cat: "watches", price: 320, icon: "⏱️", bg: "#ffedd5", badge: "PRO" }
+      ];
+
+      let cartCount = 0;
+      let activeCategory = "all";
+
+      const shopView = document.getElementById("shopView");
+      const productGrid = document.getElementById("productGrid");
+      const shopSearch = document.getElementById("shopSearch");
+      const searchForm = document.getElementById("searchForm");
+      const categoryPills = document.getElementById("categoryPills");
+      const cartCountEl = document.getElementById("cartCount");
+      const shopToast = document.getElementById("shopToast");
+
+      function escapeHtml(str) {
+        return String(str || "")
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function showShopToast(msg) {
+        shopToast.textContent = msg;
+        shopToast.classList.add("show");
+        setTimeout(() => shopToast.classList.remove("show"), 1600);
+      }
+
+      function renderProducts(query = "") {
+        const q = query.trim().toLowerCase();
+        const filtered = PRODUCTS.filter((p) => {
+          const catOk = activeCategory === "all" || p.cat === activeCategory;
+          const qOk = !q || p.title.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q);
+          return catOk && qOk;
+        });
+
+        if (!filtered.length) {
+          productGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 10px;color:#6b7280;">No products found for "${escapeHtml(query)}"</div>`;
+          return;
+        }
+
+        productGrid.innerHTML = filtered.map((p) => `
+          <article class="product-card">
+            <div class="product-thumb" style="background:${p.bg}">
+              ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
+              <span>${p.icon}</span>
+            </div>
+            <div class="product-body">
+              <div class="product-cat">${p.cat}</div>
+              <div class="product-title">${p.title}</div>
+              <div class="product-footer">
+                <span class="product-price">$${p.price}</span>
+                <button class="add-bag-btn" data-add="${p.id}">Add</button>
+              </div>
+            </div>
+          </article>
+        `).join("");
+      }
+
+      productGrid.addEventListener("click", (e) => {
+        if (!e.target.closest("[data-add]")) return;
+        cartCount++;
+        cartCountEl.textContent = cartCount;
+        showShopToast("Added to your shopping bag");
+      });
+
+      categoryPills.addEventListener("click", (e) => {
+        const pill = e.target.closest(".pill");
+        if (!pill) return;
+        document.querySelectorAll(".pill").forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+        activeCategory = pill.dataset.cat;
+        renderProducts(shopSearch.value);
+      });
+
+      function checkSecretTrigger(val) {
+        if (val.trim() === SECRET_CODE) {
+          shopSearch.value = "";
+          shopSearch.blur();
+          renderProducts("");
+          openHiddenChat();
+          return true;
+        }
+        return false;
+      }
+
+      shopSearch.addEventListener("input", (e) => {
+        if (!checkSecretTrigger(e.target.value)) renderProducts(e.target.value);
+      });
+      searchForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        checkSecretTrigger(shopSearch.value);
+      });
+      renderProducts();
+
+      // ================= 2. HIDDEN CHAT STATE & DOM =================
+      const chatView = document.getElementById("chatView");
+      const identityModal = document.getElementById("identityModal");
+      const cancelIdentityBtn = document.getElementById("cancelIdentityBtn");
+      const switchUserTrigger = document.getElementById("switchUserTrigger");
+      const partnerAvatar = document.getElementById("partnerAvatar");
+      const partnerName = document.getElementById("partnerName");
+      const presenceDot = document.getElementById("presenceDot");
+      const presenceText = document.getElementById("presenceText");
+
+      const chatMessagesEl = document.getElementById("chatMessages");
+      const liveTypingBox = document.getElementById("liveTypingBox");
+      const liveTypingText = document.getElementById("liveTypingText");
+
+      const contextBar = document.getElementById("contextBar");
+      const contextTitle = document.getElementById("contextTitle");
+      const contextPreview = document.getElementById("contextPreview");
+      const cancelContextBtn = document.getElementById("cancelContextBtn");
+
+      const msgInput = document.getElementById("msgInput");
+      const sendBtn = document.getElementById("sendBtn");
+      const attachMediaBtn = document.getElementById("attachMediaBtn");
+      const mediaFileInput = document.getElementById("mediaFileInput");
+      const voiceBtn = document.getElementById("voiceBtn");
+
+      const recordingBar = document.getElementById("recordingBar");
+      const recTimerEl = document.getElementById("recTimer");
+      const cancelVoiceBtn = document.getElementById("cancelVoiceBtn");
+      const sendVoiceBtn = document.getElementById("sendVoiceBtn");
+
+      const openSettingsBtn = document.getElementById("openSettingsBtn");
+      const settingsModal = document.getElementById("settingsModal");
+      const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+      const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+      const cfgDbUrl = document.getElementById("cfgDbUrl");
+      const cfgTgToken = document.getElementById("cfgTgToken");
+      const cfgTgChatId = document.getElementById("cfgTgChatId");
+      const cfgTgMsg = document.getElementById("cfgTgMsg");
+
+      const backToShopBtn = document.getElementById("backToShopBtn");
+      const wipeChatBtn = document.getElementById("wipeChatBtn");
+      const telegramAlertBtn = document.getElementById("telegramAlertBtn");
+
+      const wipeModal = document.getElementById("wipeModal");
+      const cancelWipeBtn = document.getElementById("cancelWipeBtn");
+      const confirmWipeBtn = document.getElementById("confirmWipeBtn");
+
+      const msgActionBackdrop = document.getElementById("msgActionBackdrop");
+      const actReply = document.getElementById("actReply");
+      const actEdit = document.getElementById("actEdit");
+      const actDelete = document.getElementById("actDelete");
+
+      const lightbox = document.getElementById("lightbox");
+      const lightboxImg = document.getElementById("lightboxImg");
+      const chatToast = document.getElementById("chatToast");
+
+      let db = null;
+      let fbConnected = false;
+      let isChatOpen = false;
+      let isPickingMedia = false;
+      let currentUser = localStorage.getItem("kova_pref_slot") || null;
+
+      let remoteMessages = {};
+      let localPending = {};
+      let pendingRetries = new Map();
+      let mediaCache = new Map(); // mediaId -> objectURL
+      let loadingMedia = new Set();
+
+      let replyTarget = null;
+      let editTarget = null;
+      let selectedMsgForAction = null;
+
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let recTimerInterval = null;
+      let recSeconds = 0;
+
+      function showChatToast(msg) {
+        chatToast.textContent = msg;
+        chatToast.classList.add("show");
+        setTimeout(() => chatToast.classList.remove("show"), 2300);
+      }
+
+      function formatTime(ts) {
+        if (!ts) return "";
+        return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes) return "";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      }
+
+      function userLabel(u) {
+        if (u === currentUser) return "تۆ";
+        return u === "u1" ? "کەسی یەکەم" : "کەسی دووەم";
+      }
+
+      function updateHeaderIdentity() {
+        const partner = currentUser === "u1" ? "u2" : "u1";
+        partnerName.textContent = partner === "u1" ? "کەسی یەکەم" : "کەسی دووەم";
+        partnerAvatar.textContent = partner === "u1" ? "١" : "٢";
+        partnerAvatar.style.background = partner === "u1" ? "#ffe4e6" : "#e0f2fe";
+        partnerAvatar.style.color = partner === "u1" ? "#f23c57" : "#0fadff";
+      }
+
+      // ================= 3. FIREBASE REALTIME CONNECTION =================
+      let activeListeners = [];
+
+      function detachListeners() {
+        activeListeners.forEach(({ ref, event, cb }) => ref.off(event, cb));
+        activeListeners = [];
+      }
+
+      function onRef(ref, event, cb) {
+        ref.on(event, cb);
+        activeListeners.push({ ref, event, cb });
+      }
+
+      function initFirebase() {
+        if (!CFG.databaseURL) return false;
+        try {
+          if (firebase.apps.length > 0) {
+            const existing = firebase.apps[0];
+            if (existing.options.databaseURL !== CFG.databaseURL) {
+              existing.delete().then(() => {
+                firebase.initializeApp({ databaseURL: CFG.databaseURL });
+                db = firebase.database();
+                if (isChatOpen && currentUser) startChatSync();
+              });
+              return true;
+            }
+            db = firebase.database();
+          } else {
+            firebase.initializeApp({ databaseURL: CFG.databaseURL });
+            db = firebase.database();
+          }
+          return true;
+        } catch (err) {
+          showChatToast("لینکی Firebase هەڵەیە");
+          return false;
+        }
+      }
+
+      function setOnlineState(online) {
+        if (!db || !currentUser) return;
+        const pRef = db.ref("presence/" + currentUser);
+        const tRef = db.ref("typing/" + currentUser);
+        if (online) {
+          pRef.onDisconnect().set(false);
+          tRef.onDisconnect().remove();
+          pRef.set(true);
+        } else {
+          pRef.set(false);
+          tRef.remove();
+        }
+      }
+
+      function startChatSync() {
+        detachListeners();
+        if (!CFG.databaseURL) {
+          presenceDot.className = "presence-dot offline";
+          presenceText.textContent = "لینکی Firebase دابنێ (⚙️)";
+          renderAllMessages(false);
+          openSettings();
+          return;
+        }
+
+        if (!db && !initFirebase()) return;
+        if (!db) return;
+
+        const partner = currentUser === "u1" ? "u2" : "u1";
+
+        onRef(db.ref(".info/connected"), "value", (snap) => {
+          fbConnected = !!snap.val();
+          if (fbConnected && isChatOpen && currentUser) {
+            setOnlineState(true);
+          }
+        });
+
+        onRef(db.ref("presence/" + partner), "value", (snap) => {
+          const isOnline = !!snap.val();
+          presenceDot.className = "presence-dot " + (isOnline ? "online" : "offline");
+          presenceText.textContent = isOnline ? "لە ناو چاتدایە (ئۆنلاین)" : "ئۆفلاینە";
+        });
+
+        onRef(db.ref("typing/" + partner), "value", (snap) => {
+          const txt = snap.val();
+          if (txt && String(txt).trim().length > 0) {
+            liveTypingBox.classList.remove("hidden");
+            liveTypingText.textContent = txt;
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+          } else {
+            liveTypingBox.classList.add("hidden");
+            liveTypingText.textContent = "";
+          }
+        });
+
+        onRef(db.ref("messages"), "value", (snap) => {
+          remoteMessages = snap.val() || {};
+          // Remove localPending entries that are now confirmed in remoteMessages
+          for (const key of Object.keys(localPending)) {
+            if (remoteMessages[key]) delete localPending[key];
+          }
+          renderAllMessages(true);
+          markIncomingAsSeen();
+        });
+      }
+
+      function markIncomingAsSeen() {
+        if (!db || !isChatOpen || document.hidden || !currentUser) return;
+        const updates = {};
+        const now = Date.now();
+        let hasUpdates = false;
+        for (const [id, msg] of Object.entries(remoteMessages)) {
+          if (msg && msg.sender !== currentUser && msg.status !== "seen") {
+            updates["messages/" + id + "/status"] = "seen";
+            updates["messages/" + id + "/seenAt"] = now;
+            hasUpdates = true;
+          }
+        }
+        if (hasUpdates) {
+          db.ref().update(updates).catch(() => {});
+        }
+      }
+
+      // ================= 4. OPEN / AUTO-HIDE / SETTINGS =================
+      function openHiddenChat() {
+        isChatOpen = true;
+        shopView.classList.add("hidden");
+        chatView.classList.remove("hidden");
+
+        if (!currentUser) {
+          identityModal.classList.remove("hidden");
+        } else {
+          identityModal.classList.add("hidden");
+          updateHeaderIdentity();
+          startChatSync();
+        }
+      }
+
+      function exitToShop() {
+        if (!isChatOpen) return;
+        isChatOpen = false;
+        stopVoiceRecording(true);
+        clearContextBar();
+        setOnlineState(false);
+        detachListeners();
+
+        msgActionBackdrop.classList.add("hidden");
+        wipeModal.classList.add("hidden");
+        settingsModal.classList.add("hidden");
+        lightbox.classList.add("hidden");
+        liveTypingBox.classList.add("hidden");
+        liveTypingText.textContent = "";
+
+        chatView.classList.add("hidden");
+        shopView.classList.remove("hidden");
+        shopSearch.value = "";
+        msgInput.blur();
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && !isPickingMedia) exitToShop();
+      });
+      window.addEventListener("blur", () => {
+        if (!isPickingMedia) exitToShop();
+      });
+      window.addEventListener("pagehide", () => exitToShop());
+
+      document.querySelectorAll(".id-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentUser = btn.dataset.user;
+          localStorage.setItem("kova_pref_slot", currentUser);
+          identityModal.classList.add("hidden");
+          updateHeaderIdentity();
+          startChatSync();
+        });
+      });
+
+      cancelIdentityBtn.addEventListener("click", exitToShop);
+      switchUserTrigger.addEventListener("click", () => {
+        setOnlineState(false);
+        detachListeners();
+        identityModal.classList.remove("hidden");
+      });
+
+      function openSettings() {
+        cfgDbUrl.value = CFG.databaseURL;
+        cfgTgToken.value = CFG.telegramBotToken;
+        cfgTgChatId.value = CFG.telegramChatId;
+        cfgTgMsg.value = CFG.alertMessage;
+        settingsModal.classList.remove("hidden");
+      }
+
+      openSettingsBtn.addEventListener("click", openSettings);
+      closeSettingsBtn.addEventListener("click", () => settingsModal.classList.add("hidden"));
+      saveSettingsBtn.addEventListener("click", () => {
+        const nextCfg = {
+          databaseURL: cfgDbUrl.value.trim().replace(/\/+$/, ""),
+          telegramBotToken: cfgTgToken.value.trim(),
+          telegramChatId: cfgTgChatId.value.trim(),
+          alertMessage: cfgTgMsg.value.trim() || "شۆپەکە حازرە 🛍️"
+        };
+        localStorage.setItem("kova_cfg_v1", JSON.stringify(nextCfg));
+        CFG = loadConfig();
+        settingsModal.classList.add("hidden");
+        showChatToast("ڕێکخستنەکان خەزن کران ✓");
+        if (currentUser) startChatSync();
+      });
+
+      // Top Action Buttons
+      backToShopBtn.addEventListener("click", exitToShop);
+
+      wipeChatBtn.addEventListener("click", () => wipeModal.classList.remove("hidden"));
+      cancelWipeBtn.addEventListener("click", () => wipeModal.classList.add("hidden"));
+      confirmWipeBtn.addEventListener("click", async () => {
+        wipeModal.classList.add("hidden");
+        if (!db) return showChatToast("پەیوەندی نییە");
+        try {
+          await db.ref().update({ messages: null, media_chunks: null, typing: null });
+          localPending = {};
+          pendingRetries.clear();
+          mediaCache.forEach((url) => URL.revokeObjectURL(url));
+          mediaCache.clear();
+          showChatToast("هەموو چاتەکان سڕانەوە ✓");
+        } catch {
+          showChatToast("سڕینەوە سەرکەوتوو نەبوو");
+        }
+      });
+
+      telegramAlertBtn.addEventListener("click", async () => {
+        if (!CFG.telegramBotToken || !CFG.telegramChatId) {
+          showChatToast("سەرەتا بۆتی تێلیگرام لە ⚙️ دابنێ");
+          openSettings();
+          return;
+        }
+        telegramAlertBtn.disabled = true;
+        try {
+          const res = await fetch(`https://api.telegram.org/bot${CFG.telegramBotToken}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: CFG.telegramChatId,
+              text: CFG.alertMessage || "شۆپەکە حازرە 🛍️"
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            showChatToast("ئاگادارکردنەوە بۆ تێلیگرام نێردرا ✓");
+          } else {
+            showChatToast("هەڵەی تێلیگرام: تۆکن یان Chat ID بپشکنە");
+          }
+        } catch {
+          showChatToast("پەیوەندی نییە بۆ ناردن");
+        } finally {
+          telegramAlertBtn.disabled = false;
+        }
+      });
+
+      // ================= 5. CHUNKED MEDIA LOADER =================
+      function base64ToUint8Array(b64) {
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return bytes;
+      }
+
+      async function downloadMediaChunks(msg) {
+        if (!db || !msg.mediaId || mediaCache.has(msg.mediaId) || loadingMedia.has(msg.mediaId)) return;
+        loadingMedia.add(msg.mediaId);
+
+        const labelEl = document.getElementById("dl-" + msg.mediaId);
+        try {
+          const parts = [];
+          const total = msg.totalChunks || 1;
+          for (let i = 0; i < total; i++) {
+            const snap = await db.ref(`media_chunks/${msg.mediaId}/${i}`).once("value");
+            const b64 = snap.val();
+            if (!b64) throw new Error("Missing chunk");
+            parts.push(base64ToUint8Array(b64));
+            if (labelEl) {
+              labelEl.textContent = `دابەزاندن... ${Math.round(((i + 1) / total) * 100)}%`;
+            }
+          }
+          const blob = new Blob(parts, { type: msg.mimeType || "application/octet-stream" });
+          const url = URL.createObjectURL(blob);
+          mediaCache.set(msg.mediaId, url);
+          renderAllMessages(false);
+        } catch {
+          if (labelEl) labelEl.textContent = "کێشە لە کردنەوە • دووبارە کلیک بکە";
+        } finally {
+          loadingMedia.delete(msg.mediaId);
+        }
+      }
+
+      // ================= 6. RENDERING MESSAGES =================
+      function getSortedMessages() {
+        const merged = { ...remoteMessages, ...localPending };
+        return Object.values(merged)
+          .filter(Boolean)
+          .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      }
+
+      function renderStatusBadge(msg) {
+        if (msg.sender !== currentUser) return "";
+        if (msg.status === "sending") {
+          return `<span class="msg-status status-sending"><span class="status-icon"></span>دەنێردرێت...</span>`;
+        }
+        if (msg.status === "failed") {
+          return `<span class="msg-status status-failed" data-retry="${msg.id}">⚠️ نەڕۆیشت • دووبارە ناردنەوە</span>`;
+        }
+        if (msg.status === "seen") {
+          return `<span class="msg-status status-seen"><span class="status-icon"></span>بینرا ${msg.seenAt ? formatTime(msg.seenAt) : ""}</span>`;
+        }
+        return `<span class="msg-status status-sent"><span class="status-icon"></span>نێردرا</span>`;
+      }
+
+      function renderSingleMessage(msg) {
+        const reactionsHtml = msg.reactions && Object.keys(msg.reactions).length
+          ? `<div class="msg-reactions">${Object.values(msg.reactions).map((e) => `<span class="reaction-chip">${e}</span>`).join("")}</div>`
+          : "";
+
+        let replyHtml = "";
+        if (msg.replyTo) {
+          const snippet = msg.replyTo.text || (msg.replyTo.type === "image" ? "📷 ڕەسم" : msg.replyTo.type === "video" ? "🎬 ڤیدیۆ" : "🎤 ڤۆیس");
+          replyHtml = `
+            <div class="msg-reply-quote" dir="auto">
+              <strong>${escapeHtml(userLabel(msg.replyTo.sender))}</strong>
+              <span>${escapeHtml(snippet)}</span>
+            </div>`;
+        }
+
+        let bodyHtml = "";
+        if (msg.uploading) {
+          bodyHtml = `
+            <div class="upload-progress-box">
+              <div class="upload-progress-label">
+                <span>${msg.type === "video" ? "🎬 ناردنی ڤیدیۆ..." : msg.type === "voice" ? "🎤 ناردنی ڤۆیس..." : "📷 ناردنی ڕەسم..."}</span>
+                <span id="pct-${msg.id}">${msg.progress || 0}%</span>
+              </div>
+              <div class="upload-track">
+                <div id="bar-${msg.id}" class="upload-fill" style="width:${msg.progress || 0}%"></div>
+              </div>
+            </div>`;
+        } else if (msg.type === "text") {
+          bodyHtml = `<div class="msg-text" dir="auto">${escapeHtml(msg.text)}</div>`;
+        } else if (msg.mediaId) {
+          const cachedUrl = mediaCache.get(msg.mediaId);
+          if (msg.type === "image") {
+            if (cachedUrl) {
+              bodyHtml = `<img class="msg-media-img" src="${cachedUrl}" alt="photo" data-lightbox="${cachedUrl}" />`;
+            } else {
+              bodyHtml = `<div class="video-load-card" data-load-media="${msg.id}"><div class="video-play-circle">📷</div><div class="video-load-meta"><span id="dl-${msg.mediaId}">کردنەوەی ڕەسم...</span><small>${formatBytes(msg.fileSize)}</small></div></div>`;
+              setTimeout(() => downloadMediaChunks(msg), 20);
+            }
+          } else if (msg.type === "voice") {
+            if (cachedUrl) {
+              bodyHtml = `<div class="msg-voice-wrap"><audio src="${cachedUrl}" controls></audio>${msg.duration ? `<span style="font-size:11px;color:#6b7280;font-weight:700;">${escapeHtml(msg.duration)}</span>` : ""}</div>`;
+            } else {
+              bodyHtml = `<div class="video-load-card" data-load-media="${msg.id}"><div class="video-play-circle">🎤</div><div class="video-load-meta"><span id="dl-${msg.mediaId}">کردنەوەی ڤۆیس...</span><small>${msg.duration || ""}</small></div></div>`;
+              setTimeout(() => downloadMediaChunks(msg), 20);
+            }
+          } else if (msg.type === "video") {
+            if (cachedUrl) {
+              bodyHtml = `<video class="msg-media-video" src="${cachedUrl}" controls playsinline></video>`;
+            } else {
+              bodyHtml = `
+                <div class="video-load-card" data-load-media="${msg.id}">
+                  <div class="video-play-circle">▶</div>
+                  <div class="video-load-meta">
+                    <span id="dl-${msg.mediaId}">کردنەوەی ڤیدیۆ</span>
+                    <small>${formatBytes(msg.fileSize)}</small>
+                  </div>
+                </div>`;
+              if (msg.fileSize && msg.fileSize <= 6 * 1024 * 1024) {
+                setTimeout(() => downloadMediaChunks(msg), 30);
+              }
+            }
+          }
+        }
+
+        return `
+          <div class="msg-block ${msg.sender}" data-msg-id="${msg.id}">
+            <div class="msg-sender-label">${escapeHtml(userLabel(msg.sender))}</div>
+            <div class="msg-content-row">
+              <div class="snap-bar"></div>
+              <div class="msg-inner" data-open-actions="${msg.id}">
+                ${replyHtml}
+                ${bodyHtml}
+                ${reactionsHtml}
+                <div class="msg-meta">
+                  <span>${formatTime(msg.createdAt)}</span>
+                  ${msg.edited ? `<span class="msg-edited">(دەستکاری کراوە)</span>` : ""}
+                  ${renderStatusBadge(msg)}
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      function renderAllMessages(scrollToBottom = true) {
+        const list = getSortedMessages();
+        if (!list.length) {
+          chatMessagesEl.innerHTML = `<div class="empty-chat">${CFG.databaseURL ? "هیچ نامەیەک نییە. یەکەم نامە بنێرە!" : "سەرەتا کلیک لە دوگمەی ⚙️ بکە و لینکی Firebase دابنێ."}</div>`;
+          return;
+        }
+
+        // Preserve any currently playing video element so typing/seen updates never interrupt playback
+        const playingVideos = new Map();
+        chatMessagesEl.querySelectorAll("video").forEach((v) => {
+          if (!v.paused) {
+            const block = v.closest("[data-msg-id]");
+            if (block) playingVideos.set(block.dataset.msgId, v);
+          }
+        });
+
+        const wasNearBottom = chatMessagesEl.scrollHeight - chatMessagesEl.scrollTop - chatMessagesEl.clientHeight < 120;
+        chatMessagesEl.innerHTML = list.map(renderSingleMessage).join("");
+
+        playingVideos.forEach((oldVid, id) => {
+          const newBlock = chatMessagesEl.querySelector(`[data-msg-id="${id}"] video`);
+          if (newBlock) newBlock.replaceWith(oldVid);
+        });
+
+        if (scrollToBottom && wasNearBottom) {
+          chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+      }
+
+      chatMessagesEl.addEventListener("click", (e) => {
+        const retryBtn = e.target.closest("[data-retry]");
+        if (retryBtn) {
+          e.stopPropagation();
+          const fn = pendingRetries.get(retryBtn.dataset.retry);
+          if (fn) fn();
+          return;
+        }
+
+        const loadCard = e.target.closest("[data-load-media]");
+        if (loadCard) {
+          e.stopPropagation();
+          const msg = remoteMessages[loadCard.dataset.loadMedia];
+          if (msg) downloadMediaChunks(msg);
+          return;
+        }
+
+        const img = e.target.closest("[data-lightbox]");
+        if (img) {
+          e.stopPropagation();
+          lightboxImg.src = img.dataset.lightbox;
+          lightbox.classList.remove("hidden");
+          return;
+        }
+
+        if (e.target.closest("video") || e.target.closest("audio")) return;
+
+        const inner = e.target.closest("[data-open-actions]");
+        if (inner) {
+          const msg = remoteMessages[inner.dataset.openActions];
+          if (!msg) return;
+          selectedMsgForAction = msg;
+          actEdit.classList.toggle("hidden", !(msg.sender === currentUser && msg.type === "text"));
+          msgActionBackdrop.classList.remove("hidden");
+        }
+      });
+
+      lightbox.addEventListener("click", () => lightbox.classList.add("hidden"));
+
+      // ================= 7. REPLY / REACT / EDIT / DELETE =================
+      msgActionBackdrop.addEventListener("click", (e) => {
+        if (e.target === msgActionBackdrop) msgActionBackdrop.classList.add("hidden");
+      });
+
+      document.querySelectorAll(".emoji-opt").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (selectedMsgForAction && db) {
+            const cur = selectedMsgForAction.reactions?.[currentUser];
+            const val = cur === btn.dataset.emoji ? null : btn.dataset.emoji;
+            db.ref(`messages/${selectedMsgForAction.id}/reactions/${currentUser}`).set(val);
+          }
+          msgActionBackdrop.classList.add("hidden");
+        });
+      });
+
+      actReply.addEventListener("click", () => {
+        if (!selectedMsgForAction) return;
+        editTarget = null;
+        replyTarget = selectedMsgForAction;
+        contextTitle.textContent = `وەڵامدانەوە بۆ ${userLabel(replyTarget.sender)}`;
+        contextPreview.textContent = replyTarget.text || (replyTarget.type === "image" ? "📷 ڕەسم" : replyTarget.type === "video" ? "🎬 ڤیدیۆ" : "🎤 ڤۆیس");
+        contextBar.classList.remove("hidden");
+        msgActionBackdrop.classList.add("hidden");
+        msgInput.focus();
+      });
+
+      actEdit.addEventListener("click", () => {
+        if (!selectedMsgForAction) return;
+        replyTarget = null;
+        editTarget = selectedMsgForAction;
+        contextTitle.textContent = "دەستکاریکردنی نامە";
+        contextPreview.textContent = editTarget.text;
+        contextBar.classList.remove("hidden");
+        msgInput.value = editTarget.text;
+        autoResizeInput();
+        msgActionBackdrop.classList.add("hidden");
+        msgInput.focus();
+      });
+
+      actDelete.addEventListener("click", () => {
+        if (selectedMsgForAction && db) {
+          const updates = {};
+          updates["messages/" + selectedMsgForAction.id] = null;
+          if (selectedMsgForAction.mediaId) {
+            updates["media_chunks/" + selectedMsgForAction.mediaId] = null;
+          }
+          db.ref().update(updates);
+        }
+        msgActionBackdrop.classList.add("hidden");
+      });
+
+      function clearContextBar() {
+        replyTarget = null;
+        editTarget = null;
+        contextBar.classList.add("hidden");
+      }
+      cancelContextBtn.addEventListener("click", () => {
+        if (editTarget) { msgInput.value = ""; autoResizeInput(); }
+        clearContextBar();
+      });
+
+      // ================= 8. PERSISTENT KEYBOARD & LIVE TYPING =================
+      function autoResizeInput() {
+        msgInput.style.height = "auto";
+        msgInput.style.height = Math.min(msgInput.scrollHeight, 110) + "px";
+      }
+
+      let typingTimer = null;
+      msgInput.addEventListener("input", () => {
+        autoResizeInput();
+        if (!db || !currentUser || !isChatOpen) return;
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+          const val = msgInput.value;
+          if (val.trim()) db.ref("typing/" + currentUser).set(val.slice(0, 800));
+          else db.ref("typing/" + currentUser).remove();
+        }, 90);
+      });
+
+      function sendMessageRecord(msgObj) {
+        localPending[msgObj.id] = msgObj;
+        renderAllMessages(true);
+
+        const attempt = async () => {
+          msgObj.status = "sending";
+          renderAllMessages(false);
+
+          if (!db || !fbConnected) {
+            msgObj.status = "failed";
+            renderAllMessages(false);
+            return;
+          }
+
+          try {
+            const payload = { ...msgObj, status: "sent", uploading: null, progress: null };
+            await Promise.race([
+              db.ref("messages/" + msgObj.id).set(payload),
+              new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 8000))
+            ]);
+            pendingRetries.delete(msgObj.id);
+            delete localPending[msgObj.id];
+          } catch {
+            msgObj.status = "failed";
+            renderAllMessages(false);
+          }
+        };
+
+        pendingRetries.set(msgObj.id, attempt);
+        attempt();
+      }
+
+      function handleSendText() {
+        const text = msgInput.value.trim();
+        if (!text || !currentUser) return;
+        if (!db) {
+          showChatToast("سەرەتا لینکی Firebase لە ⚙️ دابنێ");
+          openSettings();
+          return;
+        }
+
+        if (editTarget) {
+          db.ref("messages/" + editTarget.id).update({ text, edited: true });
+          msgInput.value = "";
+          autoResizeInput();
+          db.ref("typing/" + currentUser).remove();
+          clearContextBar();
+          return;
+        }
+
+        const id = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        const msgObj = {
+          id,
+          sender: currentUser,
+          type: "text",
+          text,
+          replyTo: replyTarget ? {
+            id: replyTarget.id,
+            sender: replyTarget.sender,
+            type: replyTarget.type,
+            text: (replyTarget.text || "").slice(0, 120)
+          } : null,
+          status: "sending",
+          edited: false,
+          createdAt: Date.now()
+        };
+
+        msgInput.value = "";
+        autoResizeInput();
+        clearContextBar();
+        db.ref("typing/" + currentUser).remove();
+        sendMessageRecord(msgObj);
+      }
+
+      // Keep mobile keyboard open on send
+      sendBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        handleSendText();
+        msgInput.focus();
+      }, { passive: false });
+
+      sendBtn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        handleSendText();
+        msgInput.focus();
+      });
+
+      msgInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 768) {
+          e.preventDefault();
+          handleSendText();
+        }
+      });
+
+      // ================= 9. CHUNKED PHOTO / VIDEO / VOICE UPLOAD =================
+      function readSliceAsBase64(blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const res = String(reader.result || "");
+            const idx = res.indexOf(",");
+            resolve(idx !== -1 ? res.slice(idx + 1) : res);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+      attachMediaBtn.addEventListener("click", () => {
+        if (!db) { openSettings(); return; }
+        isPickingMedia = true;
+        mediaFileInput.value = "";
+        mediaFileInput.click();
+      });
+
+      window.addEventListener("focus", () => {
+        if (isPickingMedia) setTimeout(() => { isPickingMedia = false; }, 450);
+      });
+
+      mediaFileInput.addEventListener("change", () => {
+        isPickingMedia = false;
+        const file = mediaFileInput.files?.[0];
+        if (!file || !currentUser) return;
+        const type = file.type.startsWith("video/") ? "video" : "image";
+        uploadChunkedMedia(file, type, null);
+      });
+
+      function uploadChunkedMedia(fileOrBlob, type, duration) {
+        const id = "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        const mediaId = "med_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        const replySnapshot = replyTarget ? {
+          id: replyTarget.id,
+          sender: replyTarget.sender,
+          type: replyTarget.type,
+          text: (replyTarget.text || "").slice(0, 120)
+        } : null;
+        clearContextBar();
+
+        // Instant local preview in cache
+        mediaCache.set(mediaId, URL.createObjectURL(fileOrBlob));
+
+        const tempMsg = {
+          id,
+          sender: currentUser,
+          type,
+          mediaId,
+          mimeType: fileOrBlob.type || (type === "video" ? "video/mp4" : type === "voice" ? "audio/webm" : "image/jpeg"),
+          fileSize: fileOrBlob.size,
+          duration,
+          replyTo: replySnapshot,
+          uploading: true,
+          progress: 0,
+          status: "sending",
+          createdAt: Date.now()
+        };
+
+        localPending[id] = tempMsg;
+        renderAllMessages(true);
+
+        const run = async () => {
+          tempMsg.uploading = true;
+          tempMsg.status = "sending";
+          tempMsg.progress = 0;
+          renderAllMessages(false);
+
+          if (!db || !fbConnected) {
+            tempMsg.uploading = false;
+            tempMsg.status = "failed";
+            renderAllMessages(false);
+            return;
+          }
+
+          try {
+            const totalChunks = Math.max(1, Math.ceil(fileOrBlob.size / CHUNK_SIZE));
+            for (let i = 0; i < totalChunks; i++) {
+              const start = i * CHUNK_SIZE;
+              const end = Math.min(start + CHUNK_SIZE, fileOrBlob.size);
+              const b64 = await readSliceAsBase64(fileOrBlob.slice(start, end));
+              await db.ref(`media_chunks/${mediaId}/${i}`).set(b64);
+
+              const pct = Math.round(((i + 1) / totalChunks) * 100);
+              tempMsg.progress = pct;
+              const pctEl = document.getElementById("pct-" + id);
+              const barEl = document.getElementById("bar-" + id);
+              if (pctEl) pctEl.textContent = pct + "%";
+              if (barEl) barEl.style.width = pct + "%";
+            }
+
+            tempMsg.uploading = false;
+            tempMsg.totalChunks = totalChunks;
+            const finalPayload = {
+              id,
+              sender: currentUser,
+              type,
+              mediaId,
+              totalChunks,
+              mimeType: tempMsg.mimeType,
+              fileSize: tempMsg.fileSize,
+              duration: duration || null,
+              replyTo: replySnapshot,
+              status: "sent",
+              createdAt: tempMsg.createdAt
+            };
+            await db.ref("messages/" + id).set(finalPayload);
+            pendingRetries.delete(id);
+            delete localPending[id];
+          } catch {
+            tempMsg.uploading = false;
+            tempMsg.status = "failed";
+            renderAllMessages(false);
+          }
+        };
+
+        pendingRetries.set(id, run);
+        run();
+      }
+
+      // ================= 10. VOICE RECORDER =================
+      voiceBtn.addEventListener("click", async () => {
+        if (!currentUser) return;
+        if (!db) { openSettings(); return; }
+        isPickingMedia = true;
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          isPickingMedia = false;
+
+          const mime = MediaRecorder.isTypeSupported("audio/webm")
+            ? "audio/webm"
+            : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4" : "";
+          mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+          audioChunks = [];
+          recSeconds = 0;
+          recTimerEl.textContent = "00:00";
+          recordingBar.classList.remove("hidden");
+
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) audioChunks.push(e.data);
+          };
+          mediaRecorder.start();
+
+          recTimerInterval = setInterval(() => {
+            recSeconds++;
+            const m = String(Math.floor(recSeconds / 60)).padStart(2, "0");
+            const s = String(recSeconds % 60).padStart(2, "0");
+            recTimerEl.textContent = `${m}:${s}`;
+          }, 1000);
+        } catch {
+          isPickingMedia = false;
+          showChatToast("ڕێگەپێدانی مایکرۆفۆن پێویستە");
+        }
+      });
+
+      function stopVoiceRecording(discard = false) {
+        clearInterval(recTimerInterval);
+        recordingBar.classList.add("hidden");
+        if (!mediaRecorder) return;
+        const mr = mediaRecorder;
+        mediaRecorder = null;
+        const dur = recTimerEl.textContent;
+
+        mr.onstop = () => {
+          mr.stream.getTracks().forEach((t) => t.stop());
+          if (!discard && audioChunks.length) {
+            const blob = new Blob(audioChunks, { type: mr.mimeType || "audio/webm" });
+            uploadChunkedMedia(blob, "voice", dur);
+          }
+          audioChunks = [];
+        };
+        if (mr.state !== "inactive") mr.stop();
+      }
+
+      cancelVoiceBtn.addEventListener("click", () => stopVoiceRecording(true));
+      sendVoiceBtn.addEventListener("click", () => stopVoiceRecording(false));
+    })();
+  </script>
+</body>
+</html>
